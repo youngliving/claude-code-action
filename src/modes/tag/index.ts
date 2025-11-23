@@ -117,6 +117,13 @@ export const tagMode: Mode = {
     // Include ALL user-specified MCP tools, not just mcp__github_ ones
     const userAllowedMCPTools = parseAllowedTools(userClaudeArgs);
 
+    // Strip --allowed-tools/--allowedTools from user args since we merge them into tagModeTools
+    const userClaudeArgsWithoutAllowedTools = userClaudeArgs
+      .replace(/--(?:allowedTools|allowed-tools)\s+"[^"]+"/g, "")
+      .replace(/--(?:allowedTools|allowed-tools)\s+'[^']+'/g, "")
+      .replace(/--(?:allowedTools|allowed-tools)\s+[^\s]+/g, "")
+      .trim();
+
     // Build claude_args for tag mode with required tools
     // Tag mode REQUIRES these tools to function properly
     const tagModeTools = [
@@ -176,9 +183,9 @@ export const tagMode: Mode = {
     // Add required tools for tag mode
     claudeArgs += ` --allowedTools "${tagModeTools.join(",")}"`;
 
-    // Append user's claude_args (which may have more --mcp-config flags)
-    if (userClaudeArgs) {
-      claudeArgs += ` ${userClaudeArgs}`;
+    // Append user's claude_args (without --allowed-tools since we already merged them)
+    if (userClaudeArgsWithoutAllowedTools) {
+      claudeArgs += ` ${userClaudeArgsWithoutAllowedTools}`;
     }
 
     core.setOutput("claude_args", claudeArgs.trim());
