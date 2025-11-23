@@ -114,9 +114,8 @@ export const tagMode: Mode = {
     await createPrompt(tagMode, modeContext, githubData, context);
 
     const userClaudeArgs = process.env.CLAUDE_ARGS || "";
-    const userAllowedMCPTools = parseAllowedTools(userClaudeArgs).filter(
-      (tool) => tool.startsWith("mcp__github_"),
-    );
+    // Include ALL user-specified MCP tools, not just mcp__github_ ones
+    const userAllowedMCPTools = parseAllowedTools(userClaudeArgs);
 
     // Build claude_args for tag mode with required tools
     // Tag mode REQUIRES these tools to function properly
